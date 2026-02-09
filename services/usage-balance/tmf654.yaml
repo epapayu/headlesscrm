@@ -1,0 +1,131 @@
+openapi: 3.0.3
+info:
+  title: TMF654 Account Balance Management
+  version: 4.0.0
+  description: |
+    TMF654 Account Balance Management API.
+    Provides standardized mechanisms for balance management (query, top-up, adjustment).
+servers:
+  - url: /tmf-api/accountBalanceManagement/v4
+paths:
+  /balance:
+    get:
+      summary: List account balances
+      operationId: listAccountBalance
+      parameters:
+        - name: relatedParty.id
+          in: query
+          schema:
+            type: string
+          description: Filter by customer/party ID
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountBalance'
+  /balance/{id}:
+    get:
+      summary: Retrieve a balance
+      operationId: retrieveAccountBalance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalance'
+  /balanceAdjustment:
+    post:
+      summary: Create a balance adjustment (Credit/Debit)
+      operationId: createBalanceAdjustment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BalanceAdjustment'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceAdjustment'
+components:
+  schemas:
+    AccountBalance:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        status:
+          type: string
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+    BalanceAdjustment:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [ "adjustment", "topup", "deduction" ]
+        amount:
+          $ref: '#/components/schemas/Money'
+        description:
+          type: string
+        reasonCode:
+          type: string
+        relatedWallet:
+          $ref: '#/components/schemas/RelatedEntity'
+    Money:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+        unit:
+          type: string
+          example: "IDR"
+    TimePeriod:
+      type: object
+      properties:
+        startDateTime:
+          type: string
+          format: date-time
+        endDateTime:
+          type: string
+          format: date-time
+    RelatedParty:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+    RelatedEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
