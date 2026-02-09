@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: KYC Service (Indonesian Regulatory)
+  version: 1.0.0
+  description: |
+    KYC Service for checking NIK (National ID) and KK (Family Card) against Dukcapil.
+servers:
+  - url: /api/kyc/v1
+paths:
+  /validate:
+    post:
+      summary: Validate NIK and KK
+      operationId: validateIdentity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '200':
+          description: Validation Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+components:
+  schemas:
+    ValidationRequest:
+      type: object
+      required:
+        - nik
+        - kk
+      properties:
+        nik:
+          type: string
+          description: National ID Number (16 digits)
+          example: "3201123456789001"
+        kk:
+          type: string
+          description: Family Card Number (16 digits)
+          example: "3201987654321001"
+    ValidationResponse:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        message:
+          type: string
+        fullName:
+          type: string
+          description: Returned if valid (Mock)
