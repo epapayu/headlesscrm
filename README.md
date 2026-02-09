@@ -1,4 +1,4 @@
-# Headless CRM - Indonesian Telco
+# Headless CRM - Telecommunications
 
 A Cloud-Native, Headless CRM designed for the Indonesian Telecommunications market, leverage Google Cloud Platform (GCP) and TM Forum Open APIs.
 
@@ -37,9 +37,20 @@ This project follows a microservices architecture with a headless design, separa
 └── docs/                   # Architecture & Design Documents
 ```
 
+## Implemented Services (Phase 2 Completed)
+
+| Service | TMF API | Description | Status | Documentation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Account Balance** | TMF654 | Balance Management & Adjustments | :white_check_mark: | [Walkthrough](./services/usage-balance/WALKTHROUGH.md) |
+| **Customer Mgmt** | TMF629 | Customer Profile & Party | :white_check_mark: | [Walkthrough](./services/customer-mgmt/WALKTHROUGH.md) |
+| **KYC Service** | - | Indonesian Identity Validation | :white_check_mark: | [Walkthrough](./services/kyc-service/WALKTHROUGH.md) |
+| **Product Catalog** | TMF620 | Product Offerings & Specifications | :white_check_mark: | [Walkthrough](./services/product-catalog/WALKTHROUGH.md) |
+| **Product Order** | TMF622 | Order Capture & Lifecycle | :white_check_mark: | [Walkthrough](./services/order-mgmt/WALKTHROUGH.md) |
+| **Usage Mgmt** | TMF635 | Usage Records (CDR) & Rating | :white_check_mark: | [Walkthrough](./services/usage-mgmt/WALKTHROUGH.md) |
+
 ## Getting Started
 
-*(Instructions to be added as services are implemented)*
+See the [Walkthrough](./walkthrough.md) for a comprehensive guide on verifying all services.
 
 ## License
 
