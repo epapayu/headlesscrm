@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: TMF620 Product Catalog Management
+  version: 4.1.0
+  description: |
+    TMF620 Product Catalog Management API.
+    Manages Product Offerings, Specifications, and Categories.
+servers:
+  - url: /tmf-api/productCatalogManagement/v4
+paths:
+  /productOffering:
+    get:
+      summary: List product offerings
+      operationId: listProductOffering
+      parameters:
+        - name: category.id
+          in: query
+          schema:
+            type: string
+          description: Filter by category
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductOffering'
+    post:
+      summary: Create a product offering
+      operationId: createProductOffering
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductOffering'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOffering'
+  /productOffering/{id}:
+    get:
+      summary: Retrieve a product offering
+      operationId: retrieveProductOffering
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOffering'
+components:
+  schemas:
+    ProductOffering:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ "Active", "Retired", "Obsolete" ]
+        productSpecification:
+          $ref: '#/components/schemas/ProductSpecificationRef'
+        category:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryRef'
+        productOfferingPrice:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductOfferingPrice'
+    ProductSpecificationRef:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+    CategoryRef:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+    ProductOfferingPrice:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        priceType:
+          type: string
+          enum: [ "oneTime", "recurring", "usage" ]
+        price:
+          $ref: '#/components/schemas/Money'
+    Money:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+        unit:
+          type: string
