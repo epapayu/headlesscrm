@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: TMF635 Usage Management
+  version: 4.0.0
+  description: |
+    TMF635 Usage Management API.
+    Manages usage records (IPDR/CDR) for billing and rating.
+servers:
+  - url: /tmf-api/usageManagement/v4
+paths:
+  /usage:
+    get:
+      summary: List usage records
+      operationId: listUsage
+      parameters:
+        - name: relatedParty.id
+          in: query
+          schema:
+            type: string
+          description: Filter by customer ID
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usage'
+    post:
+      summary: Create a usage record
+      operationId: createUsage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usage'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usage'
+  /usage/{id}:
+    get:
+      summary: Retrieve a usage record
+      operationId: retrieveUsage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usage'
+components:
+  schemas:
+    Usage:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        date:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [ "Voice", "Data", "SMS" ]
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ "Received", "Guided", "Rated", "Billed" ]
+        usageCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageCharacteristic'
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        ratedProductUsage:
+          type: array
+          items:
+            $ref: '#/components/schemas/RatedProductUsage'
+    UsageCharacteristic:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+    RelatedParty:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        name:
+          type: string
+    RatedProductUsage:
+      type: object
+      properties:
+        ratingAmountType:
+          type: string
+        taxIncludedRatingAmount:
+          $ref: '#/components/schemas/Money'
+    Money:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+        unit:
+          type: string

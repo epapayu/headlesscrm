@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: TMF622 Product Order Management
+  version: 4.0.0
+  description: |
+    TMF622 Product Order Management API.
+    Handles order capture, validation, and lifecycle management.
+servers:
+  - url: /tmf-api/productOrderManagement/v4
+paths:
+  /productOrder:
+    get:
+      summary: List product orders
+      operationId: listProductOrder
+      parameters:
+        - name: relatedParty.id
+          in: query
+          schema:
+            type: string
+          description: Filter by customer ID
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductOrder'
+    post:
+      summary: Create a product order
+      operationId: createProductOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductOrder'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOrder'
+  /productOrder/{id}:
+    get:
+      summary: Retrieve a product order
+      operationId: retrieveProductOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOrder'
+components:
+  schemas:
+    ProductOrder:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        externalId:
+          type: string
+        state:
+          type: string
+          enum: [ "Acknowledged", "InProgress", "Completed", "Failed", "Rejected" ]
+        orderDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        productOrderItem:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductOrderItem'
+    ProductOrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+          enum: [ "add", "modify", "delete", "noChange" ]
+        quantity:
+          type: integer
+        productOffering:
+          $ref: '#/components/schemas/ProductOfferingRef'
+        product:
+          $ref: '#/components/schemas/Product'
+    ProductOfferingRef:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    RelatedParty:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        name:
+          type: string
