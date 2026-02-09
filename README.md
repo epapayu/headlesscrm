@@ -35,6 +35,7 @@ This project follows a microservices architecture with a headless design, separa
 │   ├── bigquery/           # Schemas & Queries
 │   └── dataflow/           # Beam Pipelines
 └── docs/                   # Architecture & Design Documents
+    └── [design_blueprint.md](./docs/design_blueprint.md)
 ```
 
 ## Implemented Services (Phase 2 Completed)
