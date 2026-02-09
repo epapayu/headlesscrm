@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  title: TMF641 Service Order Management
+  version: 4.0.0
+  description: |
+    TMF641 Service Order Management API.
+    Handles technical service activation requests (Downstream of Product Order).
+servers:
+  - url: /tmf-api/serviceOrderManagement/v4
+paths:
+  /serviceOrder:
+    get:
+      summary: List service orders
+      operationId: listServiceOrder
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceOrder'
+    post:
+      summary: Create a service order
+      operationId: createServiceOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceOrder'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceOrder'
+  /serviceOrder/{id}:
+    get:
+      summary: Retrieve a service order
+      operationId: retrieveServiceOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceOrder'
+components:
+  schemas:
+    ServiceOrder:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        externalId:
+          type: string
+        state:
+          type: string
+          enum: [ "Acknowledged", "InProgress", "Completed", "Failed" ]
+        orderDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+        serviceOrderItem:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOrderItem'
+    ServiceOrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+          enum: [ "add", "modify", "delete", "noChange" ]
+        service:
+          $ref: '#/components/schemas/Service'
+    Service:
+      type: object
+      properties:
+        name:
+          type: string
+        serviceCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Characteristic'
+    Characteristic:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string

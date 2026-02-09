@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: TMF637 Product Inventory Management
+  version: 4.0.0
+  description: |
+    TMF637 Product Inventory Management API.
+    Manages the products mandated to a customer (Installed Base).
+servers:
+  - url: /tmf-api/productInventoryManagement/v4
+paths:
+  /product:
+    get:
+      summary: List products
+      operationId: listProduct
+      parameters:
+        - name: relatedParty.id
+          in: query
+          schema:
+            type: string
+          description: Filter by customer ID
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  /product/{id}:
+    get:
+      summary: Retrieve a product
+      operationId: retrieveProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ "Active", "Suspended", "Terminated" ]
+        startDate:
+          type: string
+          format: date-time
+        productOffering:
+          $ref: '#/components/schemas/ProductOfferingRef'
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        productCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Characteristic'
+    ProductOfferingRef:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+    RelatedParty:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        name:
+          type: string
+    Characteristic:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string

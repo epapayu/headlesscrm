@@ -47,6 +47,9 @@ This project follows a microservices architecture with a headless design, separa
 | **Product Catalog** | TMF620 | Product Offerings & Specifications | :white_check_mark: | [Walkthrough](./services/product-catalog/WALKTHROUGH.md) |
 | **Product Order** | TMF622 | Order Capture & Lifecycle | :white_check_mark: | [Walkthrough](./services/order-mgmt/WALKTHROUGH.md) |
 | **Usage Mgmt** | TMF635 | Usage Records (CDR) & Rating | :white_check_mark: | [Walkthrough](./services/usage-mgmt/WALKTHROUGH.md) |
+| **Product Inventory** | TMF637 | Installed Base (What Customer Owns) | :white_check_mark: | [Walkthrough](./services/product-inventory/WALKTHROUGH.md) |
+| **Service Order** | TMF641 | Technical Provisioning & Activation | :white_check_mark: | [Walkthrough](./services/service-order/WALKTHROUGH.md) |
+| **Resource Inventory** | TMF639 | Logical (MSISDN) & Physical (SIM) | :white_check_mark: | [Walkthrough](./services/resource-inventory/WALKTHROUGH.md) |
 
 ## Getting Started
 

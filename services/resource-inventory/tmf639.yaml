@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: TMF639 Resource Inventory Management
+  version: 4.0.0
+  description: |
+    TMF639 Resource Inventory Management API.
+    Manages physical (SIM) and logical (MSISDN, IP) resources.
+servers:
+  - url: /tmf-api/resourceInventoryManagement/v4
+paths:
+  /resource:
+    get:
+      summary: List resources
+      operationId: listResource
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category (e.g., MSISDN, SIM)
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+  /resource/{id}:
+    get:
+      summary: Retrieve a resource
+      operationId: retrieveResource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+components:
+  schemas:
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        startOperatingDate:
+          type: string
+          format: date-time
+        endOperatingDate:
+          type: string
+          format: date-time
+        resourceStatus:
+          type: string
+          enum: [ "Available", "InUse", "Reserved", "Retired" ]
+        resourceCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Characteristic'
+    Characteristic:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
