@@ -50,6 +50,7 @@ This project follows a microservices architecture with a headless design, separa
 | **Product Inventory** | TMF637 | Installed Base (What Customer Owns) | :white_check_mark: | [Walkthrough](./services/product-inventory/WALKTHROUGH.md) |
 | **Service Order** | TMF641 | Technical Provisioning & Activation | :white_check_mark: | [Walkthrough](./services/service-order/WALKTHROUGH.md) |
 | **Resource Inventory** | TMF639 | Logical (MSISDN) & Physical (SIM) | :white_check_mark: | [Walkthrough](./services/resource-inventory/WALKTHROUGH.md) |
+| **MCP Proxy** | - | AI Agent Interface (JSON-RPC) | :white_check_mark: | [Walkthrough](./services/mcp-proxy/WALKTHROUGH.md) |
 
 ## Getting Started
 
