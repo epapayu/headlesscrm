@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: TMF629 Customer Management
+  version: 4.0.0
+  description: |
+    TMF629 Customer Management API.
+    Provides standardized mechanisms for customer profile management.
+servers:
+  - url: /tmf-api/customerManagement/v4
+paths:
+  /customer:
+    get:
+      summary: List customers
+      operationId: listCustomer
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Filter by status
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      summary: Create a customer
+      operationId: createCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+  /customer/{id}:
+    get:
+      summary: Retrieve a customer
+      operationId: retrieveCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    patch:
+      summary: Patch a customer
+      operationId: patchCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        statusReason:
+            type: string
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountRef'
+        engagedParty:
+          $ref: '#/components/schemas/PartyRef'
+        contactMedium:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactMedium'
+        characteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Characteristic'
+    AccountRef:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        name:
+          type: string
+    PartyRef:
+        type: object
+        properties:
+            id:
+                type: string
+            href:
+                type: string
+            name:
+                type: string
+    ContactMedium:
+        type: object
+        properties:
+            mediumType:
+                type: string
+            preferred:
+                type: boolean
+            characteristic:
+                $ref: '#/components/schemas/MediumCharacteristic'
+    MediumCharacteristic:
+        type: object
+        properties:
+            emailAddress:
+                type: string
+            phoneNumber:
+                type: string
+            city:
+                type: string
+            country:
+                type: string
+    Characteristic:
+        type: object
+        properties:
+            name:
+                type: string
+            value:
+                type: string
