@@ -227,6 +227,41 @@ func main() {
 		return httpGet(fmt.Sprintf("%s/resource?category=%s", ResourceServiceURL, cat))
 	})
 
+
+	// --- Trouble Ticket (TMF621) ---
+	s.AddTool(mcp.NewTool("create_ticket",
+		mcp.WithDescription("Create a trouble ticket"),
+		mcp.WithString("description", mcp.Required(), mcp.Description("Issue description")),
+		mcp.WithString("severity", mcp.Required(), mcp.Description("Severity (Critical/Major/Minor)")),
+		mcp.WithString("customer_id", mcp.Required(), mcp.Description("Customer ID")),
+	), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		args, ok := request.Params.Arguments.(map[string]interface{})
+		if !ok {
+			return mcp.NewToolResultError("invalid arguments"), nil
+		}
+		payload := map[string]interface{}{
+			"description": args["description"],
+			"severity":    args["severity"],
+			"type":        "Complaint",
+			"relatedParty": []map[string]interface{}{
+				{"id": args["customer_id"], "role": "Customer"},
+			},
+		}
+		return httpPost("http://localhost:8089/tmf-api/troubleTicketManagement/v4/troubleTicket", payload)
+	})
+
+	s.AddTool(mcp.NewTool("get_ticket",
+		mcp.WithDescription("Get ticket status"),
+		mcp.WithString("id", mcp.Required(), mcp.Description("Ticket ID")),
+	), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		args, ok := request.Params.Arguments.(map[string]interface{})
+		if !ok {
+			return mcp.NewToolResultError("invalid arguments"), nil
+		}
+		id, _ := args["id"].(string)
+		return httpGet(fmt.Sprintf("http://localhost:8089/tmf-api/troubleTicketManagement/v4/troubleTicket/%s", id))
+	})
+
 	// Start server
 	if err := server.ServeStdio(s); err != nil {
 		fmt.Fprintf(os.Stderr, "Server error: %v\n", err)

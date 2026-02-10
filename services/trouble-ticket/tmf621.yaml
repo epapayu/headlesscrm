@@ -1,0 +1,167 @@
+openapi: 3.0.0
+info:
+  title: TMF621 Trouble Ticket Management
+  version: 4.0.0
+  description: API for managing trouble tickets (complaints).
+servers:
+  - url: /tmf-api/troubleTicketManagement/v4
+paths:
+  /troubleTicket:
+    get:
+      summary: List trouble tickets
+      operationId: listTroubleTicket
+      parameters:
+        - name: relatedParty.id
+          in: query
+          schema:
+            type: string
+          description: Filter by Customer ID
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TroubleTicket'
+    post:
+      summary: Create trouble ticket
+      operationId: createTroubleTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TroubleTicket_Create'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TroubleTicket'
+  /troubleTicket/{id}:
+    get:
+      summary: Get trouble ticket by ID
+      operationId: retrieveTroubleTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TroubleTicket'
+    patch:
+      summary: Update trouble ticket
+      operationId: patchTroubleTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TroubleTicket_Update'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TroubleTicket'
+
+components:
+  schemas:
+    TroubleTicket:
+      type: object
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [Critical, Major, Minor, Warning]
+        type:
+          type: string
+          example: "NetworkFault"
+        creationDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [Submitted, InProgress, Resolved, Closed]
+        statusChangeReason:
+          type: string
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        note:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+
+    TroubleTicket_Create:
+      type: object
+      required: [description, severity, type, relatedParty]
+      properties:
+        description:
+          type: string
+        severity:
+          type: string
+        type:
+          type: string
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+
+    TroubleTicket_Update:
+      type: object
+      properties:
+        status:
+          type: string
+        statusChangeReason:
+          type: string
+        note:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+
+    RelatedParty:
+      type: object
+      required: [id, role]
+      properties:
+        id:
+          type: string
+        href:
+          type: string
+        role:
+          type: string
+        name:
+          type: string
+
+    Note:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        author:
+          type: string
+        text:
+          type: string

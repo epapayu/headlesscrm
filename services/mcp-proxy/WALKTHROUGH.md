@@ -42,6 +42,8 @@ The proxy exposes the following tools:
 - `get_order(id)`
 - `report_usage(type, customer_id, quantity)`
 - `list_resources(category)`
+- `create_ticket(description, severity, customer_id)`
+- `get_ticket(id)`
 
 ## 5. Manual Verification (JSON-RPC)
 You can test it manually by sending a JSON-RPC request:
