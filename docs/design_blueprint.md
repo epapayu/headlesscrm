@@ -42,7 +42,10 @@ The backend is composed of domain-driven microservices exposing TMF Open APIs. E
     *   **Purpose**: Manages technical service activation requests.
     *   **Role**: Translates a commercial order (Product) into technical instructions (Service) for the network (e.g., "Provision HSS profile").
 
-### Domain: Usage & Balance
+### Domain: Usage, Balance & Assurance
+*   **Trouble Ticket Service** (`TMF621`)
+    *   **Purpose**: Manages customer complaints and technical issues.
+    *   **Role**: Records, tracks, and resolves problems reported by customers (e.g., "Network slow", "Billing error").
 *   **Usage Management Service** (`TMF635`)
     *   **Purpose**: Tracks data/voice/SMS usage.
     *   **Role**: Provides visibility into consumption history (CDR logs) for customers and agents.
@@ -179,6 +182,7 @@ flowchart TD
         Inv["Service Inventory<br/>TMF638<br/>(MCP)"]:::micro
         Bal["Balance Mgmt<br/>TMF654<br/>(MCP)"]:::micro
         KYC["KYC Service<br/>(MCP)"]:::micro
+        Tkt["Trouble Ticket<br/>TMF621<br/>(MCP)"]:::micro
     end
 
     subgraph Agentic ["Agentic & Data Platform (Vertex AI)"]
@@ -205,10 +209,10 @@ flowchart TD
     MobileApp --> BFF
     WA --> APIGW
     BFF --> APIGW
-    APIGW --> Cust & Prod & Order & Inv & Bal & KYC
+    APIGW --> Cust & Prod & Order & Inv & Bal & KYC & Tkt
 
-    Vertex -.->|MCP/A2A| Cust & Prod & Order & Inv & Bal & KYC
-    Cust & Prod & Order & Inv & Bal & KYC -.->|Data Pipeline| BQ
+    Vertex -.->|MCP/A2A| Cust & Prod & Order & Inv & Bal & KYC & Tkt
+    Cust & Prod & Order & Inv & Bal & KYC & Tkt -.->|Data Pipeline| BQ
 
     Cust --> KYC
     KYC --> Dukcapil
