@@ -196,6 +196,33 @@ sequenceDiagram
     *   If Cash: Agent confirms receipt -> API credits balance directly.
     *   If PG: Generate QR Code / Payment Link -> Customer pays -> Webhook credits balance.
 
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Portal
+    participant BFF
+    participant Bal as Balance Service (TMF654)
+    participant PG as Payment Gateway
+
+    Agent->>Portal: Top-up 100k (Cash)
+    Portal->>BFF: Mutation topUpBalance(amount, type: Cash)
+    BFF->>Bal: POST /balanceAdjustment (Credit)
+    Bal-->>BFF: Success (New Balance)
+    BFF-->>Portal: Wallet Updated
+    
+    rect rgb(240, 248, 255)
+        note right of Agent: Payment Gateway Flow
+        Agent->>Portal: Top-up 50k (QRIS)
+        Portal->>BFF: Mutation initTopUp(amount, type: PG)
+        BFF->>PG: Create Transaction
+        PG-->>BFF: QR Code URL
+        BFF-->>Portal: Display QR
+        note right of PG: Customer scans & pays
+        PG->>BFF: Webhook: Payment Success
+        BFF->>Bal: POST /balanceAdjustment
+    end
+```
+
 ### Journey 4b: Postpaid Bill Payment
 **Goal**: Pay monthly invoice.
 
@@ -216,6 +243,30 @@ sequenceDiagram
 3.  **View Assets**: See "Active Products" (TMF637).
 4.  **View Usage**: See "Data Consumed" vs "Quota" (TMF635).
 5.  **View Balance**: See "Current Credit" (TMF654).
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Portal
+    participant BFF
+    participant Cust as Customer (TMF629)
+    participant Inv as Inventory (TMF637)
+    participant Usage as Usage (TMF635)
+    participant Bal as Balance (TMF654)
+
+    Agent->>Portal: Open Customer 360
+    par Fetch Profile
+        Portal->>BFF: Query getCustomerProfile(id)
+        BFF->>Cust: GET /customer/{id}
+    and Fetch Assets
+        BFF->>Inv: GET /product?relatedParty={id}
+    and Fetch Usage
+        BFF->>Usage: GET /usage?relatedParty={id}
+    and Fetch Balance
+        BFF->>Bal: GET /balance?relatedParty={id}
+    end
+    BFF-->>Portal: Aggregated Dashboard Data
+```
 
 ### Journey 6: Customer Complaints (Assurance)
 **Goal**: Log, track, and resolve customer issues (Technical, Billing, Service).
