@@ -295,8 +295,46 @@ sequenceDiagram
     BFF-->>Portal: Success (Ticket ID)
 ```
 
+### Journey 7: Agentic Assistance (Digital Assistant)
+**Goal**: Allow CSRs to execute complex workflows using natural language via a persistent AI sidebar.
+**TMF Mapping**: Multi-domain orchestration via `MCP` (Model Context Protocol).
+
+#### Workflow: AI-Assisted Top-up & Troubleshooting
+1.  **Agent Input**: Agent types, "Top up C-001 by 50,000 IDR using cash" in the sidebar.
+2.  **AI Intent Recognition**: Vertex AI parses the natural language and matches it to available MCP actions (BFF Queries/Mutations).
+3.  **Data Extraction**: Model extracts `amount: 50000`, `method: cash`, `custId: C-001`.
+4.  **Action Proposal**: AI presents a "Confirmation Card" in the chat UI detailing the execution plan.
+5.  **Execution & Result**: 
+    *   *Agent Action*: Clicks "Approve".
+    *   *System Action*: GraphQL mutation fired -> `TMF654` Balance credited.
+    *   *Result*: AI prints "Balance updated successfully" and optionally refreshes the 360 Dashboard.
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Sidebar as AI Sidebar (Portal)
+    participant Model as Vertex AI (Gemini)
+    participant BFF as Go BFF Layer
+    participant Bal as Balance Service (TMF654)
+
+    Agent->>Sidebar: "Top up C-001 with 50k cash"
+    Sidebar->>Model: Parse Intent + Context
+    Model-->>Sidebar: Proposal: Exec TMF654 (C-001, 50000)
+    Sidebar->>Agent: Show Confirmation Widget
+    Agent->>Sidebar: Click "Approve"
+    Sidebar->>BFF: Mutation executeAction(...)
+    BFF->>Bal: POST /balanceAdjustment
+    Bal-->>BFF: Success
+    BFF-->>Sidebar: Action Completed
+    Sidebar-->>Agent: "Done! Balance is now..."
+```
+
 ## 4. UI/UX Design Principles
 *   **Atomic Design**: Reusable components (Buttons, Cards, Forms).
 *   **Responsive**: Mobile-first for Agents on tablets/phones.
 *   **Accessibility**: WCAG 2.1 AA compliant.
 *   **Performance**: Server-Side Rendering (SSR) for initial load, Client-Side Navigation for speed.
+*   **Persistent AI Agentic (Digital Assistant)**: A sidebar or floating widget powered by Vertex AI.
+    *   **Benefit**: Reduces training time for new CSRs and speeds up complex workflows by allowing natural language commands to execute TMF API operations.
+*   **Document / Artifact Management**: Secure component for handling file uploads during onboarding (e.g. KTP/ID Card photos).
+    *   **Security**: Assets are stored in Cloud Storage. The frontend accesses them via short-lived signed URLs, ensuring PII is protected and compliant with Cloud DLP (Data Loss Prevention) rules.
