@@ -295,7 +295,35 @@ sequenceDiagram
     BFF-->>Portal: Success (Ticket ID)
 ```
 
-### Journey 7: Agentic Assistance (Digital Assistant)
+### Journey 7: Administrator (User Management)
+**Goal**: Administer internal users (CSRs, Dealer Admins) and manage their access.
+**TMF Mapping**: `TMF632` (Party Management), `TMF669` (Party Role).
+
+#### Workflow: Manage Agents
+1.  **View Users**: Admin sees list of all Agents/Admins.
+2.  **Create User**: Enter Name, Email, and Role (CSR/Admin).
+    *   *System Action*: Create Identity (Firebase/IAM) + Create Party (TMF632).
+3.  **Assign Role**: Grant permissions (e.g., "CSR" can't delete users).
+4.  **Deactivate**: Revoke access for a leaver.
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Portal
+    participant BFF
+    participant IAM as Auth Provider (Firebase)
+    participant Party as Party Service (TMF632)
+
+    Admin->>Portal: Create User "Agent Smith"
+    Portal->>BFF: Mutation createUser(...)
+    BFF->>IAM: Create Identity (Email/Pwd)
+    IAM-->>BFF: Success (UID)
+    BFF->>Party: POST /individual (Name, Role=CSR)
+    Party-->>BFF: Created (PartyID)
+    BFF-->>Portal: User Created
+```
+
+### Journey 8: Agentic Assistance (Digital Assistant)
 **Goal**: Allow CSRs to execute complex workflows using natural language via a persistent AI sidebar.
 **TMF Mapping**: Multi-domain orchestration via `MCP` (Model Context Protocol).
 
