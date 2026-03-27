@@ -222,4 +222,29 @@ flowchart TD
     Bal --> TopUp
     TopUp --> VMS
     Inv --> Bill
-```
+
+## 10. GCP Services Catalog
+
+A comprehensive list of all Google Cloud Platform services used across the solution.
+
+| Service Category | GCP Service | Role in Architecture |
+| :--- | :--- | :--- |
+| **Compute** | Google Kubernetes Engine (GKE) | Runs microservices with auto-scaling and self-healing. |
+| **Compute** | Cloud Run | Serverless compute for Next.js web portal. |
+| **Storage & Databases** | Cloud SQL (PostgreSQL) | Relational database for transactional data (ACID). |
+| **Storage & Databases** | Firestore | Flexible document storage for Product Catalog hierarchy. |
+| **Storage & Databases** | Memorystore (Redis) | High-speed caching for sessions and tokens. |
+| **Storage & Databases** | Cloud Storage (GCS) | Object storage for static assets, reports, and backups. |
+| **Networking** | Apigee X | API Management and gateway for external partners. |
+| **Networking** | Cloud Service Mesh | Managed Istio for inter-service communication and tracking. |
+| **Networking** | Cloud Load Balancing | Global traffic routing and edge caching. |
+| **AI & ML** | Vertex AI (Gemini 2.5) | Generative AI engine for agentic reasoning and NLP. |
+| **Analytics** | BigQuery | Enterprise Data Warehouse for analytics and reporting. |
+| **Integration** | Cloud Pub/Sub | Asynchronous messaging for decoupling services. |
+| **Integration** | Dataflow | Real-time stream processing and data ingestion. |
+| **Security** | Firebase Auth | Identity platform for user login/signup. |
+| **Security** | Cloud KMS | Cryptographic key management for sensitive data encryption. |
+| **Security** | Secret Manager | Secure storage for API keys and credentials. |
+| **DevOps & Operations** | Cloud Operations Suite | Logging and Monitoring for full-stack observability. |
+| **DevOps & Operations** | Cloud Build | CI/CD automation for building container images. |
+| **DevOps & Operations** | Artifact Registry | Secure storage for container images and packages. |
