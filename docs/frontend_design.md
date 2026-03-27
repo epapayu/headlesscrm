@@ -33,6 +33,8 @@ graph LR
 4.  **Create Customer**: If KYC passes, create Customer entity.
 5.  **Provision Wallet**: Automatically provision a `Function` (Prepaid Wallet) via `TMF654`.
 
+![Updated Onboarding Journey](./images/updated_onboarding_journey.png)
+
 ```mermaid
 sequenceDiagram
     participant Agent
@@ -70,6 +72,8 @@ sequenceDiagram
 4.  **Create Customer**: Create Entity with `Postpaid` classification.
 5.  **Assign Credit Limit**: Set `CreditLimit` characteristic in `TMF654` (or Billing System).
 
+![Postpaid Onboarding](./images/postpaid_onboarding.png)
+
 ```mermaid
 sequenceDiagram
     participant Agent
@@ -103,6 +107,8 @@ sequenceDiagram
 4.  **Save Profile**: Store `PaymentMethod` with token.
 5.  **Set Default**: (Optional) specific method as default for Auto-debit.
 
+![Payment Profile Setup](./images/payment_profile_setup.png)
+
 ```mermaid
 sequenceDiagram
     participant Agent
@@ -120,6 +126,32 @@ sequenceDiagram
     BFF-->>Portal: Method Added
 ```
 
+### Journey 1d: SIM Lifecycle Management
+**Goal**: Perform SIM Swap for lost or damaged cards.
+**TMF Mapping**: `TMF654` (Service Adjustment/Modification).
+
+#### Workflow: SIM Swap
+1.  **Enter Details**: Agent enters Old ICCID and New ICCID.
+2.  **Verify Reason**: Select "Lost" or "Damaged" from dropdown.
+3.  **OTP Verification**: System sends OTP to customer's alternate number or email.
+4.  **Submit Swap**: System updates `TMF654` to point to the new SIM profile.
+
+![SIM Swap Dashboard](./images/sim_swap_dashboard.png)
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Portal
+    participant BFF
+    participant Card as Card Service (TMF654)
+
+    Agent->>Portal: Swap SIM (Old, New, Reason)
+    Portal->>BFF: Mutation swapSIM(...)
+    BFF->>Card: POST /swap (NewICCID)
+    Card-->>BFF: Success (SIM Activated)
+    BFF-->>Portal: Success Message
+```
+
 ### Journey 2: Browse & Discover (Product Catalog)
 **Goal**: View available products, filter by category, and select offers.
 **TMF Mapping**: `TMF620` (Product Catalog).
@@ -129,6 +161,9 @@ sequenceDiagram
 2.  **Filter**: Agent filters by "Mobile Data", "Voice", or "Bundles".
 3.  **Select**: Agent views details of "50GB Freedom Data".
 4.  **Check Eligibility**: (Optional) Verify if customer is eligible for this offer.
+
+![Product Catalog](./images/product_catalog.png)
+![Enhanced Product Catalog](./images/enhanced_product_catalog.png)
 
 ```mermaid
 sequenceDiagram
@@ -155,6 +190,9 @@ sequenceDiagram
 4.  **Debit Balance**: Reserve/Deduct funds.
 5.  **Fulfill**: Trigger downstream provisioning (Service Order).
 6.  **Complete**: Update Order to `Completed` and Asset to `Active`.
+
+![Order Review & Summary](./images/order_review_summary.png)
+![Refined Plan Selection](./images/refined_plan_selection.png)
 
 ```mermaid
 sequenceDiagram
@@ -196,6 +234,8 @@ sequenceDiagram
     *   If Cash: Agent confirms receipt -> API credits balance directly.
     *   If PG: Generate QR Code / Payment Link -> Customer pays -> Webhook credits balance.
 
+![Top-up Balance](./images/top_up_balance_agent.png)
+
 ```mermaid
 sequenceDiagram
     participant Agent
@@ -233,6 +273,36 @@ sequenceDiagram
     *   Payment clears -> `TMF678` Payment created -> Allocated to Invoice.
     *   Balance/Limit restored.
 
+![Billing Management](./images/billing_management.png)
+
+### Journey 4c: Physical Voucher Redemption
+**Goal**: Redeem top-up PIN for prepaid funds.
+**TMF Mapping**: `TMF678` (Payment) or `TMF654` (Adjustment).
+
+#### Workflow: Voucher Top-up
+1.  **Enter PIN**: Agent enters 16-Digit PIN and target subscriber number.
+2.  **Validate**: System checks PIN validity and expiry.
+3.  **Approve/Redeem**: API credits balance.
+
+![Physical Voucher Redemption](./images/voucher_redemption.png)
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Portal
+    participant BFF
+    participant Voucher as Voucher Service (Mock)
+    participant Bal as Balance Service (TMF654)
+
+    Agent->>Portal: Redeem PIN (MSISDN, PIN)
+    Portal->>BFF: Mutation redeemVoucher(...)
+    BFF->>Voucher: GET /validate (PIN)
+    Voucher-->>BFF: Valid (Amount: 50,000 IDR)
+    BFF->>Bal: POST /balanceAdjustment (Credit)
+    Bal-->>BFF: Success (New Balance)
+    BFF-->>Portal: Wallet Updated
+```
+
 ### Journey 5: Assurance (Usage & Support)
 **Goal**: View usage history and troubleshoot issues.
 **TMF Mapping**: `TMF635` (Usage Management), `TMF637` (Product Inventory).
@@ -243,6 +313,8 @@ sequenceDiagram
 3.  **View Assets**: See "Active Products" (TMF637).
 4.  **View Usage**: See "Data Consumed" vs "Quota" (TMF635).
 5.  **View Balance**: See "Current Credit" (TMF654).
+
+![Customer 360 Dashboard](./images/customer_360_dashboard.png)
 
 ```mermaid
 sequenceDiagram
@@ -281,6 +353,8 @@ sequenceDiagram
     *   *Result*: Returns Ticket ID (e.g., TKT-999).
 5.  **Track Status**: View updates from technical teams.
 
+![Support & Diagnostics](./images/support_diagnostics.png)
+
 ```mermaid
 sequenceDiagram
     participant Agent
@@ -295,6 +369,33 @@ sequenceDiagram
     BFF-->>Portal: Success (Ticket ID)
 ```
 
+### Journey 6b: Retention & Churn Management
+**Goal**: Handle cancellation and apply save offers.
+**TMF Mapping**: `TMF621` (Trouble Ticket), `TMF637` (Product Inventory).
+
+#### Workflow: Churn Management
+1.  **Click Cancel**: Agent selects "Process Cancellation" from Customer 360.
+2.  **Select Reason**: Churn reason dropdown (Price, Network).
+3.  **Offer Check**: System presents applicable retainers.
+
+![Retention & Churn Management](./images/retention_churn.png)
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Portal
+    participant BFF
+    participant Tkt as Ticket Service (TMF621)
+    participant Offer as Offer Service (TMF620)
+
+    Agent->>Portal: Cancel Request (Reason)
+    Portal->>BFF: Mutation initCancellation(...)
+    BFF->>Tkt: POST /troubleTicket (Churn)
+    BFF->>Offer: GET /applicableOffers (Profile, Reason)
+    Offer-->>BFF: Suggestion: 15% Discount
+    BFF-->>Portal: Display Save Offer
+```
+
 ### Journey 7: Administrator (User Management)
 **Goal**: Administer internal users (CSRs, Dealer Admins) and manage their access.
 **TMF Mapping**: `TMF632` (Party Management), `TMF669` (Party Role).
@@ -305,6 +406,8 @@ sequenceDiagram
     *   *System Action*: Create Identity (Firebase/IAM) + Create Party (TMF632).
 3.  **Assign Role**: Grant permissions (e.g., "CSR" can't delete users).
 4.  **Deactivate**: Revoke access for a leaver.
+
+![Admin User Management](./images/admin_user_management.png)
 
 ```mermaid
 sequenceDiagram
@@ -323,6 +426,31 @@ sequenceDiagram
     BFF-->>Portal: User Created
 ```
 
+### Journey 7b: Dealer Stock Management
+**Goal**: Manage dealer inventory.
+**TMF Mapping**: `TMF637` (Product Inventory).
+
+#### Workflow: View & Transfer Stock
+1.  **View Inventory**: Data grid of available SIMs / Devices.
+2.  **Search & Filter**: Find by serial.
+3.  **Assign to Order**: Move stock to active sales order.
+
+![Dealer Inventory Dashboard](./images/dealer_inventory.png)
+
+```mermaid
+sequenceDiagram
+    participant Admin as Dealer Admin
+    participant Portal
+    participant BFF
+    participant Inv as Inventory Service (TMF637)
+
+    Admin->>Portal: View Stock
+    Portal->>BFF: Query getInventory(...)
+    BFF->>Inv: GET /inventory (DealerID)
+    Inv-->>BFF: List (Available SIMs, Devices)
+    BFF-->>Portal: Render Data Grid
+```
+
 ### Journey 8: Agentic Assistance (Digital Assistant)
 **Goal**: Allow CSRs to execute complex workflows using natural language via a persistent AI sidebar.
 **TMF Mapping**: Multi-domain orchestration via `MCP` (Model Context Protocol).
@@ -336,6 +464,8 @@ sequenceDiagram
     *   *Agent Action*: Clicks "Approve".
     *   *System Action*: GraphQL mutation fired -> `TMF654` Balance credited.
     *   *Result*: AI prints "Balance updated successfully" and optionally refreshes the 360 Dashboard.
+
+![AI Agentic Sidebar](./images/ai_agentic_sidebar.png)
 
 ```mermaid
 sequenceDiagram
@@ -366,3 +496,5 @@ sequenceDiagram
     *   **Benefit**: Reduces training time for new CSRs and speeds up complex workflows by allowing natural language commands to execute TMF API operations.
 *   **Document / Artifact Management**: Secure component for handling file uploads during onboarding (e.g. KTP/ID Card photos).
     *   **Security**: Assets are stored in Cloud Storage. The frontend accesses them via short-lived signed URLs, ensuring PII is protected and compliant with Cloud DLP (Data Loss Prevention) rules.
+
+
