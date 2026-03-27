@@ -222,6 +222,7 @@ flowchart TD
     Bal --> TopUp
     TopUp --> VMS
     Inv --> Bill
+```
 
 ## 10. GCP Services Catalog
 
